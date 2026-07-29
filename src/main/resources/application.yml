@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: HumanResourceManagementSystem
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 321fawaz
+    url: jdbc:postgresql://localhost:5433/HRMS
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
