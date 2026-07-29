@@ -21,8 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import static com.codewithfawaz.humanresourcemanagementsystem.model.Permissions.*;
 import static com.codewithfawaz.humanresourcemanagementsystem.model.Role.HR;
 import static com.codewithfawaz.humanresourcemanagementsystem.model.Role.SUPER_ADMIN;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -53,11 +52,13 @@ public class SecurityConfiguration {
                                 .requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 .requestMatchers( "/api/users/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
-                                .requestMatchers(GET, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_READ.name())
+                                .requestMatchers(GET, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
                                 .requestMatchers(DELETE, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
-                                /*requestMatchers("/attendance/**").hasRole()//TODO
-                                .requestMatchers(GET,"/attendance/**").hasAnyAuthority()//TODO
-                                .requestMatchers(POST,"/attendance/**").hasAnyAuthority()//TODO*/
+                                .requestMatchers("/api/employee/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
+                                .requestMatchers(GET,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
+                                .requestMatchers(POST,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_CREATE.name(), HR_CREATE.name())
+                                .requestMatchers(PATCH,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_UPDATE.name(), HR_UPDATE.name())
+                                .requestMatchers(DELETE,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
                                 .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

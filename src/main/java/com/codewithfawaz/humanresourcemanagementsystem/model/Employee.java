@@ -17,7 +17,7 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer employeeId;
-    private String name;
+    private String fullName;
     private String contactInfo;
     private WorkStatus status;
 
