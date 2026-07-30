@@ -27,9 +27,14 @@ public class EmployeeController {
         return employeeService.findEmployeeById(id);
     }
 
-    @GetMapping("department/{departmentId}")
-    public ResponseEntity<?> getEmployeesByDepartment(@PathVariable int departmentId){
-        return employeeService.getEmployeesByDepartment(departmentId);
+    @GetMapping("department")
+    public ResponseEntity<?> getEmployeesByDepartment(@RequestParam String name){
+        return employeeService.getEmployeesByDepartment(name);
+    }
+
+    @GetMapping("department/id")
+    public ResponseEntity<?> getEmployeesByDepartment(@RequestParam int id){
+        return employeeService.getEmployeesByDepartment(id);
     }
 
     @PatchMapping("update/{id}")

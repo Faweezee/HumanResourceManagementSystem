@@ -17,7 +17,7 @@ public class EmployeeInputDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date dateOfBirth;
     private int departmentId;
-    private int userId;
+    private String userEmail;
 }
 
 

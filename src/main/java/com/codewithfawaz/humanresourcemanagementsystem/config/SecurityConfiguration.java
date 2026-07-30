@@ -51,14 +51,23 @@ public class SecurityConfiguration {
                         request
                                 .requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
+
                                 .requestMatchers( "/api/users/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
                                 .requestMatchers(GET, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
                                 .requestMatchers(DELETE, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
                                 .requestMatchers("/api/employee/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
+
                                 .requestMatchers(GET,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
                                 .requestMatchers(POST,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_CREATE.name(), HR_CREATE.name())
                                 .requestMatchers(PATCH,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_UPDATE.name(), HR_UPDATE.name())
                                 .requestMatchers(DELETE,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
+
+                                .requestMatchers("/api/departments/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
+                                .requestMatchers(GET,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
+                                .requestMatchers(POST,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_CREATE.name(), HR_CREATE.name())
+                                .requestMatchers(PATCH,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_UPDATE.name(), HR_UPDATE.name())
+                                .requestMatchers(DELETE,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
+
                                 .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

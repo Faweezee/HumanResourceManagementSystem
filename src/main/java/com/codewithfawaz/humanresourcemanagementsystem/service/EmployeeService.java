@@ -38,10 +38,11 @@ public class EmployeeService {
                     employee.getContactInfo() == null || employee.getContactInfo().equals("string") ||
                     employee.getStatus() == null ||
                     employee.getDateOfBirth() == null || /*employee.getDateOfBirth() == new Date() || //TODO  */
-                    employee.getDepartmentId() == 0 || employee.getUserId() == 0
+                    employee.getDepartmentId() == 0 || employee.getUserEmail() == null ||
+                            employee.getUserEmail().equals("string")
             ){
                 return new ResponseEntity<>(employee.getFullName()+" NOT saved.\nMAKE" +
-                        " SURE ALL INFO IS INPUTED", HttpStatus.BAD_REQUEST);
+                        " SURE ALL INFO IS INPUTTED", HttpStatus.BAD_REQUEST);
             }
             Employee emp = new Employee();
             emp.setFullName(employee.getFullName());
@@ -49,11 +50,11 @@ public class EmployeeService {
             emp.setStatus(employee.getStatus());
             emp.setDateOfBirth(employee.getDateOfBirth());
             if(departmentRepository.findById(employee.getDepartmentId()).isEmpty())
-                return new ResponseEntity<>("DEPARTMENT "+employee.getDepartmentId()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT", HttpStatus.BAD_REQUEST);
-            if(userRepository.findById(employee.getUserId()).isEmpty())
-                return new ResponseEntity<>("USER "+employee.getUserId()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("DEPARTMENT WITH ID: "+employee.getDepartmentId()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT", HttpStatus.BAD_REQUEST);
+            if(userRepository.findByEmail(employee.getUserEmail()).isEmpty())
+                return new ResponseEntity<>("USER "+employee.getUserEmail()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT", HttpStatus.BAD_REQUEST);
             emp.setDepartment(departmentRepository.findById(employee.getDepartmentId()).get());
-            emp.setUser(userRepository.findById(employee.getUserId()).get());
+            emp.setUser(userRepository.findByEmail(employee.getUserEmail()).get());
 
             employeeRepository.save(emp);
             return new ResponseEntity<>("EMPLOYEE: "+employee.getFullName()+", Saved.", HttpStatus.CREATED);
@@ -81,10 +82,20 @@ public class EmployeeService {
         return new ResponseEntity<>(new EmployeeOutputDto(emp.get().getEmployeeId(), emp.get().getFullName(), emp.get().getContactInfo(), emp.get().getStatus(), emp.get().getDateOfBirth(), emp.get().getDepartment().getDepartmentName()), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getEmployeesByDepartment(int departmentId) {
-        Optional<Department> department = departmentRepository.findById(departmentId);
+    public ResponseEntity<?> getEmployeesByDepartment(String departmenName) {
+        Optional<Department> department = departmentRepository.findByDepartmentName(departmenName);
         if(department.isEmpty())
-            return new ResponseEntity<>("Department with Id: "+departmentId+" NOT FOUND", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Department: "+departmenName+" NOT FOUND", HttpStatus.NOT_FOUND);
+        List<EmployeeOutputDto> employees = new ArrayList<>();
+        employeeRepository.findEmployeeByDepartment(department.get()).forEach(employee -> employees.add(new EmployeeOutputDto(employee.getEmployeeId(), employee.getFullName(), employee.getContactInfo(), employee.getStatus(), employee.getDateOfBirth(), employee.getDepartment().getDepartmentName()))
+        );
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getEmployeesByDepartment(int id) {
+        Optional<Department> department = departmentRepository.findById(id);
+        if(department.isEmpty())
+            return new ResponseEntity<>("Department with ID: "+id+" NOT FOUND", HttpStatus.NOT_FOUND);
         List<EmployeeOutputDto> employees = new ArrayList<>();
         employeeRepository.findEmployeeByDepartment(department.get()).forEach(employee -> employees.add(new EmployeeOutputDto(employee.getEmployeeId(), employee.getFullName(), employee.getContactInfo(), employee.getStatus(), employee.getDateOfBirth(), employee.getDepartment().getDepartmentName()))
         );
@@ -113,8 +124,8 @@ public class EmployeeService {
             Optional<Department> department = departmentRepository.findById(emp.getDepartmentId());
             department.ifPresent(employee::setDepartment);
         }
-        if(emp.getUserId() != 0 ){
-            Optional<Users> user = userRepository.findById(emp.getUserId());
+        if(emp.getUserEmail() != null || !emp.getUserEmail().equals("string") ){
+            Optional<Users> user = userRepository.findByEmail(emp.getUserEmail());
             user.ifPresent(employee::setUser);
         }
 

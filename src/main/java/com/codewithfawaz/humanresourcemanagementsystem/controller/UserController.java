@@ -34,8 +34,4 @@ public class UserController {
         return userService.deleteUserById(id);
     }
 
-    @GetMapping("test")
-    public String test(){
-        return "Success";
-    }
 }

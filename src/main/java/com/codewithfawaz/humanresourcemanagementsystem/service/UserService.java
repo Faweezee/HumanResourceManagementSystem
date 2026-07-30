@@ -26,7 +26,7 @@ public class UserService {
 
     public ResponseEntity<String> authenticate(UserLoginDto userDto) {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
-        var user = userRepository.findUsersByEmail(userDto.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(userDto.getEmail()).orElseThrow();
         if(auth.isAuthenticated())
             return ResponseEntity.ok("User Authorized\ntoken: "+jwtService.generateToken(user));
         return new ResponseEntity<>("User Not Authenticated", HttpStatus.UNAUTHORIZED);
