@@ -1,9 +1,6 @@
 package com.codewithfawaz.humanresourcemanagementsystem.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +24,9 @@ public class Users implements UserDetails {
     private String password;
     private String name;
     private Role role;
+
+    @OneToOne(mappedBy = "user")
+    private Employee employee;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -64,6 +64,8 @@ public class Users implements UserDetails {
     @Override
     public boolean isEnabled() {
 //        return UserDetails.super.isEnabled();
-        return true;
+        if(employee == null)
+            return true;
+        return (employee.getStatus() != WorkStatus.TERMINATED);
     }
 }

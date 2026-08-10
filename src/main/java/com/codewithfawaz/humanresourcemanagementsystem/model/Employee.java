@@ -1,12 +1,14 @@
 package com.codewithfawaz.humanresourcemanagementsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -29,4 +31,9 @@ public class Employee {
 
     @OneToOne
     private Users user;
+
+    @OneToMany(mappedBy = "employee")
+    private List<LeaveRequest> leaveRequestList;
+    @OneToMany(mappedBy = "employee")
+    private List<AttendanceRecord> attendanceRecordList;
 }

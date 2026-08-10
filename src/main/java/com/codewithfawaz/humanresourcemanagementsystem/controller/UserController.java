@@ -18,7 +18,6 @@ public class UserController {
     }
 
     @PostMapping("register")
-    @SecurityRequirements
     public ResponseEntity<String> registerUser(@RequestBody UserInputDto user){
         return userService.register(user);
     }

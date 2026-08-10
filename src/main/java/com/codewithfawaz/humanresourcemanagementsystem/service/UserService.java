@@ -47,7 +47,7 @@ public class UserService {
                         .role(user.getRole())
                                 .build();
         userRepository.save(_user);
-        return new ResponseEntity<>("User Created\ntoken: "+jwtService.generateToken(_user), HttpStatus.CREATED);
+        return new ResponseEntity<>(_user.getRole()+" - "+_user.getName()+" Created\ntoken: "+jwtService.generateToken(_user), HttpStatus.CREATED);
     }
 
     public ResponseEntity<String> deleteUserById(int id) {
@@ -57,6 +57,6 @@ public class UserService {
         userRepository.deleteById(id);
         return new ResponseEntity<>("USER:"+"\n\tID: "+user.get().getUserId() +
                 "\n\tNAME: "+user.get().getName()+
-                "\n\tEMAIL: "+user.get().getEmail()+"\nDELTED.", HttpStatus.OK);
+                "\n\tEMAIL: "+user.get().getEmail()+"\nDELETED.", HttpStatus.OK);
     }
 }

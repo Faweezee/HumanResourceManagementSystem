@@ -31,7 +31,6 @@ public class SecurityConfiguration {
     private final JwtFilter jwtFilter;
     private final UserDetailsService userDetailsService;
     private static final String[] WHITE_LIST_URL = {"/api/users/login",
-            "/api/users/register",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -52,21 +51,21 @@ public class SecurityConfiguration {
                                 .requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
 
-                                .requestMatchers( "/api/users/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
-                                .requestMatchers(GET, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
-                                .requestMatchers(DELETE, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
-                                .requestMatchers("/api/employee/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
+//                                .requestMatchers( "/api/users/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
+                                .requestMatchers(POST, "/api/users/register").hasAnyAuthority(SUPER_ADMIN_CREATE.getPermission(), HR_CREATE.getPermission())
+                                .requestMatchers(DELETE, "/api/users/**").hasAnyAuthority(SUPER_ADMIN_DELETE.getPermission(), HR_DELETE.getPermission())
 
-                                .requestMatchers(GET,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
-                                .requestMatchers(POST,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_CREATE.name(), HR_CREATE.name())
-                                .requestMatchers(PATCH,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_UPDATE.name(), HR_UPDATE.name())
-                                .requestMatchers(DELETE,"/api/employee/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
+                                .requestMatchers("/api/employees/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
+                                .requestMatchers(GET,"/api/employees/**").hasAnyAuthority(SUPER_ADMIN_READ.getPermission(), HR_READ.getPermission())
+                                .requestMatchers(POST,"/api/employees/**").hasAnyAuthority(SUPER_ADMIN_CREATE.getPermission(), HR_CREATE.getPermission())
+                                .requestMatchers(PATCH,"/api/employees/**").hasAnyAuthority(SUPER_ADMIN_UPDATE.getPermission(), HR_UPDATE.getPermission())
+                                .requestMatchers(DELETE,"/api/employees/**").hasAnyAuthority(SUPER_ADMIN_DELETE.getPermission(), HR_DELETE.getPermission())
 
                                 .requestMatchers("/api/departments/**").hasAnyRole(SUPER_ADMIN.name(), HR.name())
-                                .requestMatchers(GET,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_READ.name(), HR_READ.name())
-                                .requestMatchers(POST,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_CREATE.name(), HR_CREATE.name())
-                                .requestMatchers(PATCH,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_UPDATE.name(), HR_UPDATE.name())
-                                .requestMatchers(DELETE,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_DELETE.name(), HR_DELETE.name())
+                                .requestMatchers(GET,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_READ.getPermission(), HR_READ.getPermission())
+                                .requestMatchers(POST,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_CREATE.getPermission(), HR_CREATE.getPermission())
+                                .requestMatchers(PATCH,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_UPDATE.getPermission(), HR_UPDATE.getPermission())
+                                .requestMatchers(DELETE,"/api/departments/**").hasAnyAuthority(SUPER_ADMIN_DELETE.getPermission(), HR_DELETE.getPermission())
 
                                 .anyRequest().authenticated())
                 .sessionManagement(session ->
