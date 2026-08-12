@@ -1,9 +1,6 @@
 package com.codewithfawaz.humanresourcemanagementsystem.service;
 
-import com.codewithfawaz.humanresourcemanagementsystem.model.AttendanceRecord;
-import com.codewithfawaz.humanresourcemanagementsystem.model.AttendanceStatus;
-import com.codewithfawaz.humanresourcemanagementsystem.model.Employee;
-import com.codewithfawaz.humanresourcemanagementsystem.model.Users;
+import com.codewithfawaz.humanresourcemanagementsystem.model.*;
 import com.codewithfawaz.humanresourcemanagementsystem.repository.AttendanceRepository;
 import com.codewithfawaz.humanresourcemanagementsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +33,6 @@ public class AttendanceService {
         Users currentUser = userRepository.findByEmail(email).get();
         return currentUser.getEmployee();
     }
-
     private List<AttendanceRecord> getUncheckedRecords(LocalDate date) {
         List<AttendanceRecord> attendanceRecords = attendanceRepository.findByDate(date);
         attendanceRecords = attendanceRecords.stream().filter(attendanceRecord -> attendanceRecord.getClockOutTime() == null).collect(Collectors.toList());
@@ -48,13 +44,13 @@ public class AttendanceService {
         LocalDate today = LocalDate.now();
         Optional<AttendanceRecord> attendanceRecord = attendanceRepository.findByEmployeeAndDate(employee, today);
         if (attendanceRecord.isPresent())
-            return new ResponseEntity<>("EMPLOYEE ALREADY CLOCKED IN TODAY", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("EMPLOYEE ALREADY CLOCKED IN TODAY"), HttpStatus.BAD_REQUEST);
         AttendanceRecord record = new AttendanceRecord();
         record.setDate(today);
         record.setClockInTime(LocalTime.now());
         record.setEmployee(employee);
         attendanceRepository.save(record);
-        return new ResponseEntity<>("CLOCKED IN SUCCESSFULLY", HttpStatus.CREATED);
+        return new ResponseEntity<>(new Output("CLOCKED IN SUCCESSFULLY"), HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> employeeClockOut() {
@@ -62,15 +58,15 @@ public class AttendanceService {
         LocalDate today = LocalDate.now();
         Optional<AttendanceRecord> attendanceRecord = attendanceRepository.findByEmployeeAndDate(employee, today);
         if (attendanceRecord.isEmpty()) {
-            return new ResponseEntity<>("No clock in found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("No clock in found"), HttpStatus.BAD_REQUEST);
         }
         if (attendanceRecord.get().getClockOutTime() != null)
-            return new ResponseEntity<>("Already Clocked out", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("Already Clocked out"), HttpStatus.BAD_REQUEST);
 
         AttendanceRecord record = attendanceRecord.get();
         record.setClockOutTime(LocalTime.now());
         record.setStatus(AttendanceStatus.PRESENT);
         attendanceRepository.save(record);
-        return new ResponseEntity<>("Clocked out", HttpStatus.CREATED);
+        return new ResponseEntity<>(new Output("Clocked out"), HttpStatus.CREATED);
     }
 }

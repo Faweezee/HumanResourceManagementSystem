@@ -30,14 +30,14 @@ public class LeaveRequestService {
         return currentUser.getEmployee();
     }
 
-    public ResponseEntity<String> submitLeaveRequest(LeaveRequestInputDto leaveRequestInput) {
+    public ResponseEntity<?> submitLeaveRequest(LeaveRequestInputDto leaveRequestInput) {
         Employee employee = getCurrentEmployee();
 
         if (leaveRequestInput.getStartDate().before(new Date())){
-            return new ResponseEntity<>("START DATE CANNOT BE IN THE PAST!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("START DATE CANNOT BE IN THE PAST!"), HttpStatus.BAD_REQUEST);
         }
         if (leaveRequestInput.getEndDate().before(leaveRequestInput.getStartDate())){
-            return new ResponseEntity<>("END DATE CANNOT BE AFTER START DATE!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("END DATE CANNOT BE AFTER START DATE!"), HttpStatus.BAD_REQUEST);
         }
         LeaveStatus status = LeaveStatus.PENDING;
         LeaveRequest request = new LeaveRequest();
@@ -48,7 +48,7 @@ public class LeaveRequestService {
         request.setEmployee(employee);
         request.setReason(leaveRequestInput.getReason());
         request = leaveRequestRepository.save(request);
-        return new ResponseEntity<>("LEAVE REQUEST CREATED", HttpStatus.OK);
+        return new ResponseEntity<>(new Output("LEAVE REQUEST CREATED"), HttpStatus.OK);
     }
 
     public ResponseEntity<List<LeaveRequestOutputDto>> getEmployeeLeaveRequests() {
@@ -71,7 +71,7 @@ public class LeaveRequestService {
     public ResponseEntity<?> changeLeaveStatus(int id, LeaveStatus leaveStatus) {
         Optional<LeaveRequest> optionalLeaveRequest = leaveRequestRepository.findById(id);
         if(optionalLeaveRequest.isEmpty())
-            return new ResponseEntity<>("REQUEST WITH ID: "+id+" NOT FOUND", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Output("REQUEST WITH ID: "+id+" NOT FOUND"), HttpStatus.NOT_FOUND);
         LeaveRequest leaveRequest = optionalLeaveRequest.get();
         leaveRequest.setLeaveStatus(leaveStatus);
         leaveRequestRepository.save( leaveRequest);

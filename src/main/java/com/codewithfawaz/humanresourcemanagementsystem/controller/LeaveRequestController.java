@@ -20,7 +20,7 @@ public class LeaveRequestController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('employee:create', 'manager:create', 'hr:create')")
-    public ResponseEntity<String> submitLeaveRequest(@RequestBody LeaveRequestInputDto leaveRequestInput){
+    public ResponseEntity<?> submitLeaveRequest(@RequestBody LeaveRequestInputDto leaveRequestInput){
         return leaveRequestService.submitLeaveRequest(leaveRequestInput);
     }
 

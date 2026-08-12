@@ -31,7 +31,7 @@ public class EmployeeService {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
-    public ResponseEntity<String> addEmployee(EmployeeInputDto employee) {
+    public ResponseEntity<?> addEmployee(EmployeeInputDto employee) {
         try {
             if(
                     employee.getFullName() == null || employee.getFullName().equals("string") ||
@@ -41,43 +41,46 @@ public class EmployeeService {
                     employee.getDepartmentId() == 0 || employee.getUserEmail() == null ||
                             employee.getUserEmail().equals("string")
             ){
-                return new ResponseEntity<>(employee.getFullName()+" NOT saved.\nMAKE" +
-                        " SURE ALL INFO IS INPUTTED", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new Output(employee.getFullName()+" NOT saved.\nMAKE" +
+                        " SURE ALL INFO IS INPUTTED"), HttpStatus.BAD_REQUEST);
             }
             Employee emp = new Employee();
             emp.setFullName(employee.getFullName());
             emp.setContactInfo(employee.getContactInfo());
             emp.setStatus(employee.getStatus());
             emp.setDateOfBirth(employee.getDateOfBirth());
+
             if(departmentRepository.findById(employee.getDepartmentId()).isEmpty())
-                return new ResponseEntity<>("DEPARTMENT WITH ID: "+employee.getDepartmentId()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new Output("DEPARTMENT WITH ID: "+employee.getDepartmentId()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT"), HttpStatus.BAD_REQUEST);
+
             if(userRepository.findByEmail(employee.getUserEmail()).isEmpty())
-                return new ResponseEntity<>("USER "+employee.getUserEmail()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new Output("USER "+employee.getUserEmail()+" NOT FOUND.\nMAKE SURE ALL INFO IS CORRECT"), HttpStatus.BAD_REQUEST);
+
             emp.setDepartment(departmentRepository.findById(employee.getDepartmentId()).get());
             emp.setUser(userRepository.findByEmail(employee.getUserEmail()).get());
 
             employeeRepository.save(emp);
-            return new ResponseEntity<>("EMPLOYEE: "+employee.getFullName()+", Saved.", HttpStatus.CREATED);
+            return new ResponseEntity<>(new Output("EMPLOYEE: "+employee.getFullName()+", Saved."), HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return new ResponseEntity<>(employee.getFullName()+" NOT saved.", HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseEntity<String> deleteEmployeeById(Integer id) {
+    public ResponseEntity<?> deleteEmployeeById(Integer id) {
         Optional<Employee> emp = employeeRepository.findById(id);
         if (emp.isPresent()) {
             employeeRepository.deleteById(id);
-            return new ResponseEntity<>(emp.get().getFullName()+" Deleted.", HttpStatus.OK);
+            return new ResponseEntity<>(new Output(emp.get().getFullName()+" Deleted."), HttpStatus.OK);
         }
         else
-            return new ResponseEntity<>("Employee with ID: "+id+" NOT FOUND", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("Employee with ID: "+id+" NOT FOUND"), HttpStatus.BAD_REQUEST);
     }
 
     public ResponseEntity<?> findEmployeeById(int id){
         Optional<Employee> emp = employeeRepository.findById(id);
         if(emp.isEmpty())
-            return new ResponseEntity<>("Employee with Id: "+id+" NOT FOUND", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Output("Employee with Id: "+id+" NOT FOUND"), HttpStatus.NOT_FOUND);
 
         return new ResponseEntity<>(new EmployeeOutputDto(emp.get().getEmployeeId(), emp.get().getFullName(), emp.get().getContactInfo(), emp.get().getStatus(), emp.get().getDateOfBirth(), emp.get().getDepartment().getDepartmentName()), HttpStatus.OK);
     }
@@ -85,27 +88,32 @@ public class EmployeeService {
     public ResponseEntity<?> getEmployeesByDepartment(String departmenName) {
         Optional<Department> department = departmentRepository.findByDepartmentName(departmenName);
         if(department.isEmpty())
-            return new ResponseEntity<>("Department: "+departmenName+" NOT FOUND", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Output("Department: "+departmenName+" NOT FOUND"), HttpStatus.NOT_FOUND);
         List<EmployeeOutputDto> employees = new ArrayList<>();
+
         employeeRepository.findEmployeeByDepartment(department.get()).forEach(employee -> employees.add(new EmployeeOutputDto(employee.getEmployeeId(), employee.getFullName(), employee.getContactInfo(), employee.getStatus(), employee.getDateOfBirth(), employee.getDepartment().getDepartmentName()))
         );
+
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     public ResponseEntity<?> getEmployeesByDepartment(int id) {
         Optional<Department> department = departmentRepository.findById(id);
         if(department.isEmpty())
-            return new ResponseEntity<>("Department with ID: "+id+" NOT FOUND", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Output("Department with ID: "+id+" NOT FOUND"), HttpStatus.NOT_FOUND);
+
         List<EmployeeOutputDto> employees = new ArrayList<>();
+
         employeeRepository.findEmployeeByDepartment(department.get()).forEach(employee -> employees.add(new EmployeeOutputDto(employee.getEmployeeId(), employee.getFullName(), employee.getContactInfo(), employee.getStatus(), employee.getDateOfBirth(), employee.getDepartment().getDepartmentName()))
         );
+
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
     public ResponseEntity<?> updateEmployeeById(int id, EmployeeInputDto emp) {
         Optional<Employee> optionalEmployee = employeeRepository.findById(id);
         if(optionalEmployee.isEmpty()){
-            return new ResponseEntity<>("EMPLOYEE WITH ID: "+id+" NOT saved.\n EMPLOYEE NOT FOUND", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Output("EMPLOYEE WITH ID: "+id+" NOT saved.\n EMPLOYEE NOT FOUND"), HttpStatus.NOT_FOUND);
         }
         Employee employee = optionalEmployee.get();
        if(emp.getFullName() != null && !emp.getFullName().equals("string")){

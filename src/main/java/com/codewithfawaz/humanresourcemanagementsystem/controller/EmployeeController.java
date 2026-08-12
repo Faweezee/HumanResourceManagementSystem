@@ -43,12 +43,12 @@ public class EmployeeController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<String> addEmployee(@RequestBody EmployeeInputDto employee){
+    public ResponseEntity<?> addEmployee(@RequestBody EmployeeInputDto employee){
         return employeeService.addEmployee(employee);
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deleteEmployeeById(@PathVariable Integer id){
+    public ResponseEntity<?> deleteEmployeeById(@PathVariable Integer id){
         return employeeService.deleteEmployeeById(id);
     }
 }

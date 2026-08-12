@@ -36,7 +36,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deleteDepartment(@PathVariable int id){
+    public ResponseEntity<?> deleteDepartment(@PathVariable int id){
         return departmentService.deleteDepartment(id);
     }
 }

@@ -1,8 +1,6 @@
 package com.codewithfawaz.humanresourcemanagementsystem.service;
 
-import com.codewithfawaz.humanresourcemanagementsystem.model.UserInputDto;
-import com.codewithfawaz.humanresourcemanagementsystem.model.UserLoginDto;
-import com.codewithfawaz.humanresourcemanagementsystem.model.Users;
+import com.codewithfawaz.humanresourcemanagementsystem.model.*;
 import com.codewithfawaz.humanresourcemanagementsystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,19 +22,20 @@ public class UserService {
     private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<String> authenticate(UserLoginDto userDto) {
+    public ResponseEntity<?> authenticate(UserLoginDto userDto) {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
         var user = userRepository.findByEmail(userDto.getEmail()).orElseThrow();
         if(auth.isAuthenticated())
-            return ResponseEntity.ok("User Authorized\ntoken: "+jwtService.generateToken(user));
-        return new ResponseEntity<>("User Not Authenticated", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.ok(new UserOutput("authorized", ""+jwtService.generateToken(user), user.getUsername(), user.getRole()));
+
+        return new ResponseEntity<>(new Output("not authorized"), HttpStatus.UNAUTHORIZED);
     }
 
-    public ResponseEntity<String> register(UserInputDto user) {
+    public ResponseEntity<?> register(UserInputDto user) {
         List<Users> users = userRepository.findAll();
         for(Users person : users){
             if(person.getEmail().equals(user.getEmail()))
-                return new ResponseEntity<>("User with email: "+user.getEmail()+" already exists", HttpStatus.OK);
+                return new ResponseEntity<>(new Output("user already exists"), HttpStatus.OK);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         var _user = Users
@@ -47,16 +46,14 @@ public class UserService {
                         .role(user.getRole())
                                 .build();
         userRepository.save(_user);
-        return new ResponseEntity<>(_user.getRole()+" - "+_user.getName()+" Created\ntoken: "+jwtService.generateToken(_user), HttpStatus.CREATED);
+        return new ResponseEntity<>(new UserOutput("user created", ""+jwtService.generateToken(_user), _user.getUsername(), _user.getRole()), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<String> deleteUserById(int id) {
+    public ResponseEntity<?> deleteUserById(int id) {
         Optional<Users> user = userRepository.findById(id);
         if(!user.isPresent())
-            return new ResponseEntity<>("USER NOT FOUND", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Output("user not found"), HttpStatus.NOT_FOUND);
         userRepository.deleteById(id);
-        return new ResponseEntity<>("USER:"+"\n\tID: "+user.get().getUserId() +
-                "\n\tNAME: "+user.get().getName()+
-                "\n\tEMAIL: "+user.get().getEmail()+"\nDELETED.", HttpStatus.OK);
+        return new ResponseEntity<>(new Output("user "+user.get().getName()+" deleted"), HttpStatus.OK);
     }
 }

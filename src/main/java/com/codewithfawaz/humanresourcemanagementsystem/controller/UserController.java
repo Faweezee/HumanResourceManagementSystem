@@ -18,18 +18,18 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<String> registerUser(@RequestBody UserInputDto user){
+    public ResponseEntity<?> registerUser(@RequestBody UserInputDto user){
         return userService.register(user);
     }
 
     @PostMapping("login")
     @SecurityRequirements
-    public ResponseEntity<String> verifyUser(@RequestBody UserLoginDto user){
+    public ResponseEntity<?> verifyUser(@RequestBody UserLoginDto user){
         return userService.authenticate(user);
     }
 
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable int id){
+    public ResponseEntity<?> deleteUserById(@PathVariable int id){
         return userService.deleteUserById(id);
     }
 
