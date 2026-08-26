@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class UserOutput {
     private String message;
     private String token;
-    private String username;
+    private String email;
     private Role role;
+    private String name;
 }

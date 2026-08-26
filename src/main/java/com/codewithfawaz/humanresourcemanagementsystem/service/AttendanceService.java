@@ -44,13 +44,13 @@ public class AttendanceService {
         LocalDate today = LocalDate.now();
         Optional<AttendanceRecord> attendanceRecord = attendanceRepository.findByEmployeeAndDate(employee, today);
         if (attendanceRecord.isPresent())
-            return new ResponseEntity<>(new Output("EMPLOYEE ALREADY CLOCKED IN TODAY"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("clocked in"), HttpStatus.BAD_REQUEST);
         AttendanceRecord record = new AttendanceRecord();
         record.setDate(today);
         record.setClockInTime(LocalTime.now());
         record.setEmployee(employee);
         attendanceRepository.save(record);
-        return new ResponseEntity<>(new Output("CLOCKED IN SUCCESSFULLY"), HttpStatus.CREATED);
+        return new ResponseEntity<>(new Output("clocked in"), HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> employeeClockOut() {
@@ -58,15 +58,27 @@ public class AttendanceService {
         LocalDate today = LocalDate.now();
         Optional<AttendanceRecord> attendanceRecord = attendanceRepository.findByEmployeeAndDate(employee, today);
         if (attendanceRecord.isEmpty()) {
-            return new ResponseEntity<>(new Output("No clock in found"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("not clocked in"), HttpStatus.BAD_REQUEST);
         }
         if (attendanceRecord.get().getClockOutTime() != null)
-            return new ResponseEntity<>(new Output("Already Clocked out"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Output("clocked out"), HttpStatus.OK);
 
         AttendanceRecord record = attendanceRecord.get();
         record.setClockOutTime(LocalTime.now());
         record.setStatus(AttendanceStatus.PRESENT);
         attendanceRepository.save(record);
-        return new ResponseEntity<>(new Output("Clocked out"), HttpStatus.CREATED);
+        return new ResponseEntity<>(new Output("clocked out"), HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<?> getAttendanceStatus() {
+        Employee employee = getCurrentEmployee();
+        LocalDate today = LocalDate.now();
+        Optional<AttendanceRecord> attendanceRecord = attendanceRepository.findByEmployeeAndDate(employee, today);
+        if (attendanceRecord.isEmpty()) {
+            return new ResponseEntity<>(new Output("not clocked in"), HttpStatus.OK);
+        }
+        if (attendanceRecord.get().getClockOutTime() != null)
+            return new ResponseEntity<>(new Output("clocked out"), HttpStatus.OK);
+        return new ResponseEntity<>(new Output("clocked in"), HttpStatus.OK);
     }
 }

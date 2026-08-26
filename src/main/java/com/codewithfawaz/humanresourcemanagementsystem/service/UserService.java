@@ -26,7 +26,7 @@ public class UserService {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
         var user = userRepository.findByEmail(userDto.getEmail()).orElseThrow();
         if(auth.isAuthenticated())
-            return ResponseEntity.ok(new UserOutput("authorized", ""+jwtService.generateToken(user), user.getUsername(), user.getRole()));
+            return ResponseEntity.ok(new UserOutput("authorized", ""+jwtService.generateToken(user), user.getUsername(), user.getRole(), user.getName()));
 
         return new ResponseEntity<>(new Output("not authorized"), HttpStatus.UNAUTHORIZED);
     }
@@ -46,7 +46,7 @@ public class UserService {
                         .role(user.getRole())
                                 .build();
         userRepository.save(_user);
-        return new ResponseEntity<>(new UserOutput("user created", ""+jwtService.generateToken(_user), _user.getUsername(), _user.getRole()), HttpStatus.CREATED);
+        return new ResponseEntity<>(new UserOutput("user created", ""+jwtService.generateToken(_user), _user.getUsername(), _user.getRole(), _user.getName()), HttpStatus.CREATED);
     }
 
     public ResponseEntity<?> deleteUserById(int id) {

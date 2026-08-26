@@ -103,6 +103,8 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOrigin("http://localhost:5173");
+        corsConfiguration.addAllowedOrigin("http://localhost:5174");
         corsConfiguration.addAllowedMethod(GET);
         corsConfiguration.addAllowedMethod(POST);
         corsConfiguration.addAllowedMethod(PATCH);

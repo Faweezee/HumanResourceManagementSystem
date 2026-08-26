@@ -6,10 +6,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/attendance")
@@ -27,5 +24,11 @@ public class AttendanceController {
     @PreAuthorize("hasAnyAuthority('employee:update', 'manager:update', 'hr:update')")
     public ResponseEntity<?> employeeClockOut() {
         return attendanceService.employeeClockOut();
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('employee:read', 'manager:read', 'hr:read')")
+    public ResponseEntity<?> getAttendanceStatus(){
+        return attendanceService.getAttendanceStatus();
     }
 }
