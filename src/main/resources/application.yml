@@ -3,12 +3,14 @@ spring:
     name: HumanResourceManagementSystem
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: 321fawaz
-    url: jdbc:postgresql://localhost:5432/HRMS
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:your_password_here}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/HRMS}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+jwt:
+  secret: ${JWT_SECRET:}

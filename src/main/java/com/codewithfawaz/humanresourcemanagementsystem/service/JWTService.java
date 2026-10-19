@@ -14,19 +14,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
+import javax.crypto.KeyGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
 @Service
 public class JWTService {
-    private final String secretKey = "a2d29a9eaecdb22706e716a380a3cf16b25b715e95eb46d34ac855f5daf62edc";
+    private final String secretKey;
 
-   /* public JWTService() {
-        try{
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSha256");
-            SecretKey sk = keyGen.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+    public JWTService(@Value("${jwt.secret:}") String configuredSecret) {
+        if (configuredSecret != null && !configuredSecret.isBlank()) {
+            this.secretKey = configuredSecret;
+        } else {
+            try {
+                KeyGenerator keyGen = KeyGenerator.getInstance("HmacSha256");
+                SecretKey sk = keyGen.generateKey();
+                this.secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
         }
-    }*/
+    }
 
     public String generateToken(UserDetails user){
         Map<String, Object> claims = new HashMap<>();
